@@ -14,17 +14,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Primero crear los roles
         $this->call(RoleSeeder::class);
 
-        // User::firstOrCreate(
-        //     ['email' => 'test@example.com'],
-        //     [
-        //         'name' => 'Test User',
-        //         'password' => Hash::make('password'),
-        //         'email_verified_at' => now(),
-        //     ]
-        // );
+        // Crear usuario Admin
+        User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Administrador',
+                'password' => Hash::make('password'),
+                'role_id' => 1, // 1 = Admin
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Crear un usuario Profesor
+        User::firstOrCreate(
+            ['email' => 'alexis@gmail.com'],
+            [
+                'name' => 'Alexis',
+                'password' => Hash::make('password'),
+                'role_id' => 3, // 3 = Profesor
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Crear un usuario Estudiante
+        User::firstOrCreate(
+            ['email' => 'estudiante@gmail.com'],
+            [
+                'name' => 'Estudiante Test',
+                'password' => Hash::make('password'),
+                'role_id' => 2, // 2 = Estudiante
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

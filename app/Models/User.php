@@ -13,6 +13,36 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
+    public function role() 
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function materiasComoAlumno()
+    {
+        return $this->belongsToMany(Materia::class, 'alumno_materia', 'user_id', 'materia_id');
+    }
+
+    public function materiasComoProfesor()
+    {
+        return $this->belongsToMany(Materia::class, 'profesor_materia', 'user_id', 'materia_id');
+    }
+
+    public function isAlumno()
+    {
+        return $this->role?->name === 'Alumno';
+    }
+
+    public function isProfesor()
+    {
+        return $this->role?->name === 'Profesor';
+    }
+
+    public function isAdministrador()
+    {
+        return $this->role?->name === 'Administrador';
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +52,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
     ];
 
     /**

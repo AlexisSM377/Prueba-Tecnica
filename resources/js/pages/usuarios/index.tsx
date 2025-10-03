@@ -1,0 +1,291 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import { dashboard } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import {
+    Edit,
+    GraduationCap,
+    Mail,
+    Plus,
+    Shield,
+    Trash2,
+    Users as UsersIcon,
+    UserCog,
+} from 'lucide-react';
+import { useState } from 'react';
+
+interface Role {
+    id: number;
+    name: string;
+}
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    role_id: number;
+    role: Role;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Props {
+    users: User[];
+    roles: Role[];
+    filters: {
+        role_id?: string;
+    };
+}
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard().url,
+    },
+    {
+        title: 'Usuarios',
+        href: '/usuarios',
+    },
+];
+
+export default function Index({ users, roles, filters }: Props) {
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        user: User | null;
+    }>({ open: false, user: null });
+
+    const handleDelete = () => {
+        if (deleteDialog.user) {
+            router.delete(`/usuarios/${deleteDialog.user.id}`, {
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, user: null });
+                },
+            });
+        }
+    };
+
+    const handleFilterChange = (value: string) => {
+        router.get(
+            '/usuarios',
+            { role_id: value === 'all' ? undefined : value },
+            { preserveState: true },
+        );
+    };
+
+    const getRoleIcon = (roleName: string) => {
+        switch (roleName) {
+            case 'Alumno':
+                return <GraduationCap className="h-5 w-5" />;
+            case 'Profesor':
+                return <UserCog className="h-5 w-5" />;
+            case 'Administrador':
+                return <Shield className="h-5 w-5" />;
+            default:
+                return <UsersIcon className="h-5 w-5" />;
+        }
+    };
+
+    const getRoleBadgeVariant = (
+        roleName: string,
+    ): 'default' | 'secondary' | 'destructive' | 'outline' => {
+        switch (roleName) {
+            case 'Alumno':
+                return 'default';
+            case 'Profesor':
+                return 'secondary';
+            case 'Administrador':
+                return 'destructive';
+            default:
+                return 'outline';
+        }
+    };
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Usuarios" />
+            <div className="flex h-full flex-1 flex-col gap-4 p-4">
+                {/* Header */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">
+                            Usuarios
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Gestiona alumnos, profesores y administradores
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Select
+                            value={filters.role_id || 'all'}
+                            onValueChange={handleFilterChange}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filtrar por rol" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos</SelectItem>
+                                {roles.map((role) => (
+                                    <SelectItem
+                                        key={role.id}
+                                        value={role.id.toString()}
+                                    >
+                                        {role.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Link href="/usuarios/create">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Nuevo Usuario
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Cards Grid */}
+                {users.length === 0 ? (
+                    <Card>
+                        <CardContent className="flex flex-col items-center justify-center py-10">
+                            <UsersIcon className="mb-4 h-12 w-12 text-muted-foreground" />
+                            <h3 className="mb-2 text-lg font-semibold">
+                                No hay usuarios
+                            </h3>
+                            <p className="mb-4 text-center text-sm text-muted-foreground">
+                                {filters.role_id
+                                    ? 'No se encontraron usuarios con el rol seleccionado'
+                                    : 'Comienza creando tu primer usuario'}
+                            </p>
+                            {!filters.role_id && (
+                                <Link href="/usuarios/create">
+                                    <Button>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Crear Usuario
+                                    </Button>
+                                </Link>
+                            )}
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {users.map((user) => (
+                            <Card key={user.id} className="overflow-hidden">
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start space-x-3">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                                {getRoleIcon(user.role.name)}
+                                            </div>
+                                            <div className="flex-1 space-y-1">
+                                                <CardTitle className="text-lg">
+                                                    {user.name}
+                                                </CardTitle>
+                                                <Badge
+                                                    variant={getRoleBadgeVariant(
+                                                        user.role.name,
+                                                    )}
+                                                    className="text-xs"
+                                                >
+                                                    {user.role.name}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Mail className="h-4 w-4" />
+                                        <span className="truncate">
+                                            {user.email}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Link
+                                            href={`/usuarios/${user.id}/edit`}
+                                            className="flex-1"
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full"
+                                            >
+                                                <Edit className="mr-2 h-4 w-4" />
+                                                Editar
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setDeleteDialog({
+                                                    open: true,
+                                                    user,
+                                                })
+                                            }
+                                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Delete Dialog */}
+            <Dialog
+                open={deleteDialog.open}
+                onOpenChange={(open) => setDeleteDialog({ open, user: null })}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>¿Eliminar usuario?</DialogTitle>
+                        <DialogDescription>
+                            ¿Estás seguro de que deseas eliminar a "
+                            {deleteDialog.user?.name}"? Esta acción no se puede
+                            deshacer.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() =>
+                                setDeleteDialog({ open: false, user: null })
+                            }
+                        >
+                            Cancelar
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete}>
+                            Eliminar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </AppLayout>
+    );
+}
