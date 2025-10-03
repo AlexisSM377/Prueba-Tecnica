@@ -16,7 +16,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('role');
+        $query = User::with('role')
+            ->whereHas('role', function ($query) {
+                $query->whereIn('name', ['Alumno', 'Profesor']);
+            });
 
         // Filtrar por rol si se proporciona
         if ($request->has('role_id') && $request->role_id) {
@@ -24,7 +27,9 @@ class UserController extends Controller
         }
 
         $users = $query->latest()->get();
-        $roles = Role::all();
+        
+        // Solo mostrar roles de Alumno y Profesor en el filtro
+        $roles = Role::whereIn('name', ['Alumno', 'Profesor'])->get();
 
         return inertia('usuarios/index', [
             'users' => $users,

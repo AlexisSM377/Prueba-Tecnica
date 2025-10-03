@@ -31,8 +31,8 @@ interface User {
     id: number;
     name: string;
     email: string;
-    role_id: number;
-    role: Role;
+    role_id: number | null;
+    role: Role | null;
 }
 
 interface Props {
@@ -64,7 +64,7 @@ export default function Edit({ user, roles }: Props) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         email: user.email,
-        role_id: user.role_id.toString(),
+        role_id: user.role_id?.toString() || '',
         password: '',
         password_confirmation: '',
     });

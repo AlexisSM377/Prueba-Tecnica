@@ -46,8 +46,8 @@ interface User {
     id: number;
     name: string;
     email: string;
-    role_id: number;
-    role: Role;
+    role_id: number | null;
+    role: Role | null;
     created_at: string;
     updated_at: string;
 }
@@ -95,7 +95,9 @@ export default function Index({ users, roles, filters }: Props) {
         );
     };
 
-    const getRoleIcon = (roleName: string) => {
+    const getRoleIcon = (roleName: string | null | undefined) => {
+        if (!roleName) return <UsersIcon className="h-5 w-5" />;
+        
         switch (roleName) {
             case 'Alumno':
                 return <GraduationCap className="h-5 w-5" />;
@@ -109,8 +111,10 @@ export default function Index({ users, roles, filters }: Props) {
     };
 
     const getRoleBadgeVariant = (
-        roleName: string,
+        roleName: string | null | undefined,
     ): 'default' | 'secondary' | 'destructive' | 'outline' => {
+        if (!roleName) return 'outline';
+        
         switch (roleName) {
             case 'Alumno':
                 return 'default';
@@ -134,7 +138,7 @@ export default function Index({ users, roles, filters }: Props) {
                             Usuarios
                         </h1>
                         <p className="text-muted-foreground">
-                            Gestiona alumnos, profesores y administradores
+                            Gestiona alumnos, profesores de la plataforma educativa
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -197,7 +201,7 @@ export default function Index({ users, roles, filters }: Props) {
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-start space-x-3">
                                             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                                {getRoleIcon(user.role.name)}
+                                                {getRoleIcon(user.role?.name)}
                                             </div>
                                             <div className="flex-1 space-y-1">
                                                 <CardTitle className="text-lg">
@@ -205,11 +209,11 @@ export default function Index({ users, roles, filters }: Props) {
                                                 </CardTitle>
                                                 <Badge
                                                     variant={getRoleBadgeVariant(
-                                                        user.role.name,
+                                                        user.role?.name,
                                                     )}
                                                     className="text-xs"
                                                 >
-                                                    {user.role.name}
+                                                    {user.role?.name || 'Sin Rol'}
                                                 </Badge>
                                             </div>
                                         </div>
