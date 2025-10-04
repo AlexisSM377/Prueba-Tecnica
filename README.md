@@ -172,25 +172,13 @@ crud-escolar/
 - Se relaciona con alumnos (many-to-many)
 - Se relaciona con profesores (many-to-many)
 
+### Diagrama entidad-Relación (ERD)
+
+![alt](public/favicon.svg)
+
 ### Role (Rol)
 - Define los roles del sistema (Profesor, Alumno)
 - Se relaciona con usuarios (one-to-many)
 
 
-## 🧪 Testing
-
-```bash
-# Ejecutar tests
-php artisan test
-
-# Con cobertura
-php artisan test --coverage
-```
-
-
-
-## 👤 Autor
-
-**Alexis SM**
-- GitHub: [@AlexisSM377](https://github.com/AlexisSM377)
 
