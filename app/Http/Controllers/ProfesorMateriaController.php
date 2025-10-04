@@ -2,32 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Materia;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProfesorMateriaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar las materias de un profesor.
      */
-    public function index()
+    public function index(User $profesor)
     {
-        //
+        if (!$profesor->isProfesor()) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'El usuario no es un profesor.');
+        }
+
+        $profesor->load(['materiasComoProfesor', 'role']);
+
+        return inertia('profesores/materias/index', [
+            'profesor' => $profesor,
+            'materias' => $profesor->materiasComoProfesor,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar formulario para asignar materias a un profesor.
      */
-    public function create()
+    public function create(User $profesor)
     {
-        //
+        if (!$profesor->isProfesor()) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'El usuario no es un profesor.');
+        }
+
+        $profesor->load(['materiasComoProfesor', 'role']);
+
+        // Obtener materias no asignadas al profesor
+        $materiasDisponibles = Materia::whereNotIn('id', $profesor->materiasComoProfesor->pluck('id'))
+            ->orderBy('nombre')
+            ->get();
+
+        return inertia('profesores/materias/create', [
+            'profesor' => $profesor,
+            'materias' => $materiasDisponibles,
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Asignar materias al profesor.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $profesor)
     {
-        //
+        if (!$profesor->isProfesor()) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'El usuario no es un profesor.');
+        }
+
+        $validated = $request->validate([
+            'materia_ids' => 'required|array|min:1',
+            'materia_ids.*' => 'exists:materias,id',
+        ]);
+
+        // Sincronizar materias (agregar solo las nuevas, sin eliminar las existentes)
+        $profesor->materiasComoProfesor()->syncWithoutDetaching($validated['materia_ids']);
+
+        return redirect()->route('profesores.materias.index', $profesor)
+            ->with('success', 'Materias asignadas exitosamente.');
     }
 
     /**
@@ -55,10 +96,18 @@ class ProfesorMateriaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar una materia del profesor.
      */
-    public function destroy(string $id)
+    public function destroy(User $profesor, Materia $materia)
     {
-        //
+        if (!$profesor->isProfesor()) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'El usuario no es un profesor.');
+        }
+
+        $profesor->materiasComoProfesor()->detach($materia->id);
+
+        return redirect()->route('profesores.materias.index', $profesor)
+            ->with('success', 'Materia eliminada exitosamente.');
     }
 }

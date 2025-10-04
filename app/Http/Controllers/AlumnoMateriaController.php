@@ -27,7 +27,7 @@ class AlumnoMateriaController extends Controller
     }
 
     /**
-     * Mostrar formulario para asignar materias.
+     * Mostrar formulario para asignar materias a un alumno.
      */
     public function create(User $alumno)
     {
@@ -38,6 +38,7 @@ class AlumnoMateriaController extends Controller
 
         $alumno->load(['materiasComoAlumno', 'role']);
 
+        // Obtener materias no asignadas al alumno
         $materiasDisponibles = Materia::whereNotIn('id', $alumno->materiasComoAlumno->pluck('id'))
             ->orderBy('nombre')
             ->get();
@@ -94,7 +95,7 @@ class AlumnoMateriaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar una materia del alumno.
      */
     public function destroy(User $alumno, Materia $materia)
     {

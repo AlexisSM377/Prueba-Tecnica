@@ -14,7 +14,7 @@ class MateriaController extends Controller
     public function index()
     {
         return Inertia::render('materias/index', [
-            'materias' => Materia::with(['alumnos', 'profesores'])->latest()->get()
+            'materias' => Materia::withCount(['alumnos', 'profesores'])->latest()->get()
         ]);
     }
 
