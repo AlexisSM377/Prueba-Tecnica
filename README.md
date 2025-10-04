@@ -1,0 +1,1 @@
+Elaborar un sistema CRUD de una escuela, donde se puedan dar de alta alumnos, materias, profesores, se puedan relacionar alumnos con materias y materias con profesores.
