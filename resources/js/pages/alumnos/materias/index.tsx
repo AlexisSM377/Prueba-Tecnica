@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import AppLayout from "@/layouts/app-layout";
 import { Head, Link, router } from "@inertiajs/react";
 import { AlertDialog } from "@radix-ui/react-alert-dialog";
-import { ArrowLeft, BookOpen, GraduationCap, Plus, Trash } from "lucide-react";
+import { ArrowLeft, BookOpen, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 
@@ -33,6 +33,7 @@ interface Props {
     alumno: User;
     materias: Materia[]
 }
+
 export default function Index({ alumno, materias }: Props) {
     const [deleteDialog, setDeleteDialog] = useState<{
             open: boolean;
@@ -48,6 +49,7 @@ export default function Index({ alumno, materias }: Props) {
             })
         }
     }
+
     return (
         <AppLayout>
             <Head title={`Materias de ${alumno.name}`} />
@@ -132,7 +134,7 @@ export default function Index({ alumno, materias }: Props) {
                                                         setDeleteDialog({ open: true, materia })
                                                     }
                                                 >
-                                                    <Trash className="h-4 w-4" />
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
                                                 </Button>
                                             </div>
                                             {materia.descripcion && (

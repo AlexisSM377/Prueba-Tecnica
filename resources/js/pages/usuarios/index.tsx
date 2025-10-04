@@ -23,7 +23,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
@@ -62,10 +61,6 @@ interface Props {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
     {
         title: 'Usuarios',
         href: '/usuarios',
@@ -242,6 +237,24 @@ export default function Index({ users, roles, filters }: Props) {
                                                     </Button>
                                                 </Link>
                                             )}
+
+                                            {/* Botón de Materias para Profesores */}
+                                            {user.role?.name === 'Profesor' && (
+                                                <Link
+                                                    href={`/profesores/${user.id}/materias`}
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        title="Gestionar profesores"
+                                                    >
+                                                        <BookOpen className="h-4 w-4 text-primary" />
+                                                    </Button>
+                                                </Link>
+                                            )}
+
+                                            {/* Botón de Editar */}
                                             <Link
                                                 href={`/usuarios/${user.id}/edit`}
                                             
