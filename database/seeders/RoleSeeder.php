@@ -14,8 +14,8 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Roles para el sistema escolar
+        Role::create(['name' => 'Administrador']); // Para gestionar el CRUD
         Role::create(['name' => 'Alumno']);
         Role::create(['name' => 'Profesor']);
-        // Role::create(['name' => 'Administrador']); // Para gestionar el CRUD
     }
 }
