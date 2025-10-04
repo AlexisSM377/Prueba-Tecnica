@@ -174,7 +174,7 @@ crud-escolar/
 
 ### Diagrama entidad-Relación (ERD)
 
-![alt](public/favicon.svg)
+![alt](public/diagrama.png)
 
 ### Role (Rol)
 - Define los roles del sistema (Profesor, Alumno)
