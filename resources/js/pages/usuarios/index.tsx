@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -26,14 +27,14 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
-    Edit,
     GraduationCap,
-    Mail,
     Plus,
     Shield,
     Trash2,
     Users as UsersIcon,
     UserCog,
+    BookOpen,
+    Pencil,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -170,7 +171,7 @@ export default function Index({ users, roles, filters }: Props) {
                     </div>
                 </div>
 
-                {/* Cards Grid */}
+                {/* Usuarios Grid */}
                 {users.length === 0 ? (
                     <Card>
                         <CardContent className="flex flex-col items-center justify-center py-10">
@@ -196,63 +197,79 @@ export default function Index({ users, roles, filters }: Props) {
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {users.map((user) => (
-                            <Card key={user.id} className="overflow-hidden">
-                                <CardHeader className="pb-3">
+                            <Card key={user.id} className="group relative transition-all hover:shadow-md">
+                                <CardHeader>
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-start space-x-3">
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                            <div className="rounded-full bg-primary/10 p-2">
                                                 {getRoleIcon(user.role?.name)}
                                             </div>
-                                            <div className="flex-1 space-y-1">
+                                            <div>
                                                 <CardTitle className="text-lg">
                                                     {user.name}
                                                 </CardTitle>
-                                                <Badge
-                                                    variant={getRoleBadgeVariant(
-                                                        user.role?.name,
-                                                    )}
-                                                    className="text-xs"
-                                                >
-                                                    {user.role?.name || 'Sin Rol'}
-                                                </Badge>
+                                                <CardDescription>
+                                                    {user.email}
+                                                </CardDescription>
+                                                
                                             </div>
                                         </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-                                        <Mail className="h-4 w-4" />
-                                        <span className="truncate">
-                                            {user.email}
-                                        </span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Link
-                                            href={`/usuarios/${user.id}/edit`}
-                                            className="flex-1"
+                                    <div className="flex items-center justify-between">
+                                        <Badge
+                                            variant={getRoleBadgeVariant(
+                                                user.role?.name,
+                                            )}
+                                            
                                         >
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="w-full"
+                                            {user.role?.name || 'Sin Rol'}
+                                        </Badge>
+                                        <div className='flex gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
+                                            {/* Botón de Materias para Alumnos */}
+                                            {user.role?.name === 'Alumno' && (
+                                                <Link
+                                                    href={`/alumnos/${user.id}/materias`}
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        title="Gestionar materias"
+                                                    >
+                                                        <BookOpen className="h-4 w-4 text-primary" />
+                                                    </Button>
+                                                </Link>
+                                            )}
+                                            <Link
+                                                href={`/usuarios/${user.id}/edit`}
+                                            
                                             >
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Editar
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8"
+                                                    title="Editar usuario"
+                                                >
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() =>
+                                                    setDeleteDialog({
+                                                        open: true,
+                                                        user,
+                                                    })
+                                                }
+                                                className="h-8 w-8"
+                                                title="Eliminar usuario"
+                                            >
+                                                <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
-                                        </Link>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setDeleteDialog({
-                                                    open: true,
-                                                    user,
-                                                })
-                                            }
-                                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
